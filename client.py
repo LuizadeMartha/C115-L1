@@ -1,19 +1,23 @@
 import socket
 
-# Criação do socket do cliente
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect(("localhost", 12345))  # Conecta-se ao servidor
+def start_client():
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket.connect(("localhost", 12345))  # Conecta ao servidor
 
-# Loop para receber perguntas e enviar respostas
-while True:
-    data = client.recv(1024).decode()
-    if not data:
-        break
-    print(data, end="")
+    while True:
+        # Recebe a mensagem do servidor
+        data = client_socket.recv(1024).decode()
+        if not data:
+            break  # Encerra se não houver mais dados
 
-    # Se for uma pergunta com opções, espera uma resposta do usuário
-    if data[0].isdigit():  # Se começar com um número, espera uma resposta
-        response = input("Digite o número da resposta: ")
-        client.send(response.encode())  # Envia a resposta para o servidor
+        print(data)  # Exibe a pergunta e as opções
 
-client.close()  # Fecha a conexão após o término do quiz
+        if "Escolha uma opção" in data:
+            # Envia a resposta para o servidor
+            answer = input("Sua resposta: ")
+            client_socket.send(answer.encode())
+
+    client_socket.close()
+
+if __name__ == "__main__":
+    start_client()
