@@ -11,10 +11,14 @@ questions = [
 def handle_client(conn):
     score = 0
     for i, q in enumerate(questions):
-        # Envia a pergunta para o cliente
-        conn.send(f"{q['question']}\n".encode())
+        # Monta a mensagem com a pergunta e as opções
+        message = f"{q['question']}\n"
         for idx, option in enumerate(q["options"]):
-            conn.send(f"{idx+1}. {option}\n".encode())
+            message += f"{idx+1}. {option}\n"
+        message += "Escolha uma opção (1, 2, 3, 4): "
+
+        # Envia a pergunta para o cliente
+        conn.send(message.encode())
 
         # Recebe a resposta do cliente e verifica se está correta
         response = conn.recv(1024).decode().strip()
@@ -29,8 +33,8 @@ def handle_client(conn):
 
 # Criação do socket do servidor
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind(("localhost", 12345))  # Define o endereço e a porta do servidor
-server.listen(5)  # Permite até 5 conexões simultâneas
+server.bind(("localhost", 12345))  
+server.listen(5)  
 print("Servidor esperando conexões...")
 
 # Loop para aceitar conexões de clientes
